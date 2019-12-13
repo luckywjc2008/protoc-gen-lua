@@ -1,0 +1,947 @@
+package com.sj.game.proto.hall;
+option java_multiple_files = true;
+option optimize_for = SPEED;
+//息命令号
+enum HallCmd {
+    HEART_BEAT_SC = 1; //大厅主动发的心跳检查子消息号,body 无 message 无
+    HEART_BEAT_CS = 2; //客户端回的心跳消息号，body 无 message 无
+    Begin                  = 10000;     //大厅的网络命令开始,暂没使用
+    LOGIN                  = 10001;     //请求登陆大厅，message Login LoginRes
+    VISITOR_LOGIN          = 10002;     //游客登录返回message VisitorLogin LoginRes
+    MAIL_REQ               = 10003;     //获取邮件 message MailReq MailRes
+    REFRESH_DESK_LIST      = 10004;     //刷新桌子列表 message RefreshDeskList RefreshDeskListRes
+    USER_INFORMATION       = 10005;     //个人信息 message UserInformation  UserInformationRes
+    UPDATE_NICKNAME        = 10006;     //修改昵称 message UpdateNickname
+    REFRESH_SAFETY_BOX     = 10007;     //刷新保险柜 message RefreshSafetyBox RefreshSafetyBoxRes
+    OPERATE_SAFETY_BOX     = 10008;     //操作保险柜 message OperateSafetyBox OperateSafetyBoxRes TransferRecord
+    TRANSFER_RECORD        = 10009;     //转账记录 message TransferRecord TransferRecordRes
+    GET_USER_SIGN          = 10010;     // 获取签到 GetUserSign  GetUserSignRes
+    USER_SIGN              = 10011;     //签到 GetUserSign  GetUserSignRes
+    TRANSFER               = 10012;     //转账 message Transfer  TransferRes
+    FRIEND_REQ             = 10013;     // 获取 搜索 添加 跟随 好友 message FriendReq FriendResp
+    SIGN_REWARD            = 10014;     // 获取签到配置  message SignReward SignRewardResp
+    USER_WEALTH            = 10015;     //更新玩家的金币 积分 砖石 message UserWealth
+    RE_CONNECT             = 10016;     //通知断线重连 message ReConnect
+    BIND_PHONE             = 10017;     //绑定手机 message BindPhone BindPhoneRes
+    RANKING_LIST           = 10018;     //排行榜 message RankingList RankingListRes
+    INTO_ROOM              = 10019;     //进入房间 message IntoRoom IntoRoomRes
+    QUICK_INTO_ROOM        = 10020;     //快速进入房间 message QuickIntoRoom IntoRoomRes
+    RAGS_TO_RICHES         = 10021;     //白手起家进入房间 message RageToRiches IntoRoomRes
+    SHARE                  = 10022;     //分享有礼 message Share ShareRes
+    BEGIN_TURN              = 10023;// 开始转奖message BeginTurn  BeginTurnRes
+    IN_TURNTABLE            = 10024;//进入转盘主界面 message InTurntable  PturntableRes
+    FLUSH_GOLDBALL           = 10025;//刷新夺宝进度
+    SELF_GOLDBALL             = 10026;//查看自己这期的金球 message SelfGoldball SelfGoldballRes
+    GOLDBALL_RECORD           = 10027;//查看开奖记录 message GoldballRecord GoldballRecordRes
+    SEND_PHONE_CODE           = 10028;//请求发送短信验证码 message SendPhoneCode SendPhoneCodeRes
+    HORSE_LANTERN               = 10029;//跑马灯 message HorseLantern
+    NOTIFY_OTHER_LOGIN             =10030;//通知被顶号，message OtherLogin
+    CLUB_MANAGE                  =10031;//俱乐部管理 messae ClubManageReq  ClubManageResp
+    CLUB_USERS                    =10032;// 俱乐部成员messae ClubUsersReq ClubUsersResp
+    CONTRIBUTE_DETAIL             =10033;//贡献详情 message ContributeDetailReq ContributeDetailResp
+    CLUB_USER_CTRB                 =10034;//直属成员跟我的代理 message ClubUserCtrbReq  ClubUserCtrbResp
+    UPDATE_REMASKS                 =10035;//更新俱乐部公告message UpdateRemasksReq UpdateRemasksResp
+    MY_SPRED                        =10036;//我的推广员 message MySpreadReq MySpreadResp
+    ACTIVE_NOTICE                =10037;//活动公告
+    CMD_REQ_BENEFIT       =10101;//领取救济金 message TCMD_REQ_BENEFIT TCMD_RES_BENEFIT
+    FETCH_CLUB_HORSE_LANTERN        = 10038;//玩家获取俱乐部公告 message FetchClubHorseLantern
+    FLUSH_POINTS_TASK               = 10039;// 刷新积分任务 message FlushPointsTask FlushPointsTaskRes
+    GET_POINTS_TASK                 = 10040;// 领取积分任务 message GetPointsTask GetPointsTaskRes
+    FLUSH_RED_DOT                   = 10041;// 请求刷新红点 message FlushRedDot FlushRedDotRes
+    EXCHANGE_POINTS                 = 10042;//积分兑换 message ExchangePoints ExchangePointsRes
+
+    Gifts                           = 10043;// 商城中的礼物列表 message GiftsRes
+    Buy_Gift                        = 10044;// 购买礼物 message BuyGift
+    Rucksack_Gifts                  = 10045;// 自己拥有的礼物列表 message GiftsRes
+    Use_Prop                        = 10046;// 使用道具 message UseProp
+    Update_HeadImg                  = 10047;// 更新头像 message HeadImg
+    //集五福
+    SearchLuckCard                  = 10048;//查询显示 luckcard界面 message LuckCardReq LuckCardRes
+    TurnLuckCard                    = 10049;//请求翻牌 message TurnLuckCardReq TurnLuckCardRes
+    SearchNameList                  = 10050;//获取中奖名单 message NameListReq NameListRes
+    Gift_Record                     = 10051;// 收礼记录 message GiftRecordRes
+    //活动转盘
+    Active_Turntable                = 10052;// 活动转盘 message ActiveTurntableRes
+    Play_Turntable                  = 10053;// 启动转盘 message PlayTurntable
+    Rucksack_Ticket                 = 10054;// 自己拥有的礼物列表 message GiftsRes
+    Give_Away_Ticket                = 10055;// 赠送门票 message GiveAwayTicket
+    Use_Ticket                      = 10056;// 使用门票 message UseTicket
+    Check_User                      = 10057;// 检查玩家是否存在 message CheckUser
+    Ticket_Record                   = 10058;// 门票记录 message TicketRecordRes
+
+    //SNG比赛服
+    SNG_RACING_ROOM_REQ                  = 10201;// 获取比赛服 message SngRacingRoomReq SngRacingRoomResp
+    Mtt_Room_List                        = 10202;// 获取Mtt比赛服列表 message MttRoomList
+    Mtt_Sign_Up                          = 10203;// Mtt报名 message MttSignUp
+    Mtt_Cancel_SignUp                    = 10204;// Mtt取消报名 message MttCancelSignUp
+    Mtt_Into_Room                        = 10205;// Mtt进入房间 message IntoMttRoom
+    Mtt_Outs                              =10206;//获取赛况 message OutsReq  OutsResp
+    Mtt_My_Room_List                      =10207;//获取我的Mtt比赛服列表 message MttRoomList
+
+    Bind_Club_Id                        = 10301;//绑定俱乐部id message BindClubIdReq BindClubIdResp
+
+}
+
+
+//用于前后端测试通信的
+message Test{
+	optional int32 t1=1;    //测试整型
+	optional float t2=2;    //测试浮点型
+	optional string t3=3;   //测试字符串
+	optional bool t4=4;     //测试布尔型
+	optional bytes t5=5;    //测试二进制
+	extensions 100 to 199;
+}
+
+enum CardBagEnum {
+    Give = 0; //赠送
+    Accept = 1;//收礼
+    Use = 2;// 使用
+    Reward = 3;//奖励
+    System = 4;//系统发放
+}
+
+//用户基本信息类
+message User{
+    required string openId=1;//微信opengId
+    required string nickName=2;//玩家昵称
+    optional int32 sex=3;//玩家的性别，值为1时是男性，值为2时是女性，值为0时是未知
+    optional string headImgUrl=4;//用户头像，用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
+    optional int32 userId=5;//玩家游戏当中的唯一id
+	optional int64 gold=6;//玩家的银币
+	optional int32 userType=7 [default = 0];//用户类型:0=玩家（默认） 1=机器人
+	optional int32 diamonds=8;//玩家钻石
+	optional int32 points=9;//玩家积分
+	optional int32 inviterId=10;//邀请人id 所属俱乐部id
+	optional int32 dayFirst=11;//是否当天第一次登陆 0=不是 1=是
+	optional string unionid=12;//玩家微信的唯一id
+	optional string phone=13;//玩家手机号
+    optional int32 role = 14;//玩家角色 0 = 普通 1 = 代理
+    optional int32 headImgType = 15[default = 0];//玩家头像类型 0 =使用原头像 1=使用道具头像
+}
+//区域（场次）实体对象
+message Area{
+    optional int32 areaId=1;//id号，全局唯一 1=菜鸟场,2=平民场,3=富甲场,4=土豪场,5=比赛场
+    optional string areaName=2;//大区名称
+    optional int32 gameType=3 [default = 0];//类型:0=银币场
+    optional int32 baseGold=4;//底分
+    optional int32 gateGold=5;//入场费
+    optional int32 minLimit=6;//限制区间:最低限制3000,0代表无下限
+    optional int32 maxLimit=7;//限制区间:最高限制5000,0代表无上限, 都为0代表无限制
+    optional int32 onlineCount=8;//在线人数
+    optional int32 isOpen=9;//是否开放 0=未开放 1=开放
+}
+//游戏实体对象
+message Game{
+    optional int32 gameId=1;//id号，全局唯一 1=血战麻将，2=楚雄45筒，3=昆明麻将,4=玉溪五六筒
+    optional string gameName=2;//名称
+    optional int32 gameType=3 [default = 0];//类型:0=银币场
+    optional int32 hotType=4 [default = 0];//热门还是推荐：0=荐，1=热
+    optional int32 onlineCount=5;//在线人数
+    repeated Area  areaList=6;//注册到游戏上的大区
+}
+//公用的消息，封装了回执状态和错误消息
+message StatusMsg{
+    required int32 status=1;//状态 0=成功,其他=错误代码
+    optional string msg= 2;//错误描述
+}
+//请求游戏列表 Hall_Cmd_ID=1003
+message SearchGame{
+    optional int32 gameType=1 [default = 0]; //游戏类型 0=银币场
+    optional bool  lazy=2 [default = true]; //是否懒加载大区
+}
+//返回游戏列表 Hall_Cmd_ID=1004
+message SearchGameRes{
+    required StatusMsg statusMsg=1;//回执状态
+    repeated Game gameList=2;//游戏列表
+}
+//请求区域(场次)列表 Hall_Cmd_ID=1005
+message SearchArea{
+    required int32 gameId=1;//游戏唯一id
+    optional int32 gameType=2 [default = 0]; //游戏类型 0=银币场
+}
+//返回区域(场次)列表 Hall_Cmd_ID=1006
+message SearchAreaRes{
+    required StatusMsg statusMsg=1;//回执状态
+    repeated Area areaList=2;//各场次列表
+}
+//请求逻辑(房间)服地址 Hall_Cmd_ID=1007
+message RooomAddress{
+     required int32 gameId=1;//游戏唯一id
+     required int32 areaId=2;//大区（场次）id
+     optional int32 gameType=3 [default = 0]; //游戏类型 0=银币场
+     required int32 userId=4;//玩家游戏当中的唯一id
+}
+//返回逻辑服地址信息，Hall_Cmd_ID=1008
+message RooomAddressRes{
+    required StatusMsg statusMsg=1;//回执状态
+    optional string ip=2;//房间服ip
+    optional int32 port=3;//端口号
+    optional int32 gameId=4;//游戏唯一id
+    optional int32 areaId=5;//大区（场次）id
+    optional int32 roomId=7;//房间服务器维一id
+    optional int32 gameType=6 [default = 0]; //游戏类型 0=银币场
+}
+//请求快速开始, Hall_Cmd_ID=1009
+message QuickStart{
+     required int32 gameId=1;//游戏唯一id
+     optional int32 gameType=2 [default = 0]; //游戏类型 0=银币场
+     required int32 userId=3;//玩家游戏当中的唯一id
+}
+//返回快速开始结果， Hall_Cmd_ID=1010
+message QuickStartRes{
+     required StatusMsg statusMsg=1;//回执状态
+     optional string ip=2;//房间服ip
+     optional int32 port=3;//端口号
+}
+//通知前端刷新大厅各游戏和大区的人数，Hall_Cmd_ID=1011
+message RefreshPlayerCount{
+    repeated Game gameList=1;//游戏列表，只返回了id和人数
+}
+//通知前端刷新大厅游戏和服务列表, Hall_Cmd_ID=1012
+message RefreshGameAndArea{
+    repeated Game gameList=1;//游戏列表，返回了所有数据
+}
+
+//根据桌子号查询私人房信息 Hall_Cmd_ID=1022
+message SearchPrivateRoom{
+    required int32 userId=1;//玩家id
+    required int32 deskId=2;//桌子的id
+    optional int32 isExchangesTables = 3; //是否是换桌
+    optional int32 clubId = 4; //俱乐部id
+}
+//救济金消息体
+message Relief{
+    optional int32 limitGold=1;//银币少于多少可以领
+    optional int32 perGold=2;//每次领取多少
+    optional int32 dayCount=3;//每日领取多少次
+    optional int32 remainCount=4;//当日剩余可领取次数
+}
+//查询用户个人信息
+message UserInformation{
+    optional int32      userId            =1;//玩家游戏当中的唯一id
+}
+//用户个人信息返回
+message UserInformationRes{
+    optional int32      userId            =1;//玩家游戏当中的唯一id
+    optional string     headImgUrl        =2;//用户头像
+    optional string     nickName          =3;//用户昵称
+    optional int32      sex               =4;//性别
+    optional int64      gold              =5;//金币
+    optional int32      diamonds          =6;//钻石
+    optional int32      points            =7;//积分
+    optional string     phone             =8;//玩家手机号
+    optional int32      totalPlayCount    =9;//总局数
+    optional float      winningRate       =10;//胜率
+    optional float      rujuRate          =11;//入局率
+    optional float      tanpaiRate        =12;//摊牌率single_big_win
+    optional int64      singleBigWin      =13;//单句最高赢得金币
+    repeated int32      bigCardType       =14;//最大牌型
+    optional StatusMsg  statusMsg         =15;//回执状态
+    optional int32  headImgType         =16;//玩家头像类型 0 =使用原头像 1=使用道具头像
+}
+
+//修改用户昵称
+message UpdateNickname{
+    optional int32      userId            =1;//玩家游戏当中的唯一id
+    optional string     nickName          =2;//用户昵称
+}
+//修改用户昵称
+message UpdateNicknameRes{
+    optional StatusMsg  statusMsg         =1;//回执状态
+    optional string     nickName          =2;//用户昵称
+}
+
+//修改用户个人信息
+message UpdateUserInfo{
+    optional int32      userId =1;//玩家游戏当中的唯一id
+    optional string     sign   =2;//用户的签名
+}
+//修改用户个人信息返回
+message UpdateUserInfoRes{
+    optional int32 userId=1;//玩家游戏当中的唯一id
+    optional StatusMsg statusMsg=2;//状态
+}
+//战绩信息
+message RecordInfo{
+    optional int32 userId=1;//玩家游戏当中的唯一id
+    optional string username=2;//玩家名称
+    optional int32 score=3;//单局得分
+}
+
+message Mail{
+    optional int32 id=1;//邮件id
+    optional string reward=2;//发放的奖励，格式{type:数量，type:数量}
+    optional string text=3;//邮件文本内容
+    optional string gmtCreate=4;//邮件的创建时间
+    optional string gmtUpdate=5;//邮件的最后更新时间
+    optional string title=6;//邮件标题
+    optional int32 status = 7;//状态0 =未查看 1= 已領取 2= 刪除 3=已查看
+}
+
+message MailRes{
+    optional StatusMsg statusMsg = 1;
+    repeated Mail mail = 2;//邮件返回
+    optional int32 reqType = 3;//操作类型 0=默认获取所有未领取的或者没奖品的邮件，1=获取已经领取的，2 =领取单个，3=领取所有，4 = 查看没得附件
+}
+
+message MailReq{
+    optional int32 userId=1;
+    optional int32 reqType = 2; //操作类型 0=默认获取所有未领取的或者没奖品的邮件，1=获取已经领取的，2 =领取单个，3=领取所有，4 = 查看没得附件
+    optional int32 mailId = 3; //领取单个的邮件id
+}
+
+//房间列表
+message RefreshDeskList{
+    optional int32 roomLevel    =1;//房间等级 1 白手起家, 2 中产 ,3 大亨
+    optional int32 gameId       =2;//gameId
+}
+
+//房间信息
+message DeskInfo{
+    optional int32 deskId       =1;//房间Id
+    optional int32 gameId       =2;//房间类型 1 经典德州, 2 必下场, 3 单挑房
+    optional int32 minChip      =3;//小盲
+    optional int32 maxChip      =4;//大盲
+    optional int64 minLimit     =5;//最小携带量
+    optional int64 maxLimit     =6;//最大携带量
+    optional int32 curPeople    =7;//当前人数
+    optional int32 totalPeople  =8;//总人数
+    optional int32 mustNum      =9;//必下数量
+    repeated User  userList    =10;//头像
+    optional int32  weiGuan     =11;//必下数量
+}
+
+//房间列表
+message RefreshDeskListRes{
+    repeated DeskInfo   deskList    =1;//房间
+    optional int32      totalDesk   =2;//一共多少房间
+    optional int32      totalCount  =3;//总人数
+    optional int32      roomLevel   =4;//房间等级 1 白手起家, 2 中产 ,3 大亨
+    optional StatusMsg  statusMsg   =5;//回执状态
+}
+
+//刷新保险柜
+message RefreshSafetyBox{
+    optional int32      userId  =1;//用户Id
+}
+
+//刷新保险柜返回
+message RefreshSafetyBoxRes{
+    optional int32      userId         =1;  //用户Id
+    optional int64      gold           =2;  //携带金币
+    optional int64      safetyBoxGold  =3;  //保险柜资产
+    optional int64      totalGold      =4;  //总资产
+    optional StatusMsg  statusMsg      =5;//回执状态
+}
+
+//操作保险柜
+message OperateSafetyBox{
+    optional int32      userId         =1;  //用户Id
+    optional int32      type           =2;  //操作方式 1 存入, 2 取出
+    optional int64      num            =3;  //操作数量
+}
+
+//操作保险柜返回
+message OperateSafetyBoxRes{
+     optional int32      userId         =1;  //用户Id
+     optional int64      gold           =2;  //携带金币
+     optional int64      safetyBoxGold  =3;  //保险柜资产
+     optional int64      totalGold      =4;  //总资产
+     optional StatusMsg  statusMsg      =5;//回执状态
+
+}
+
+//转账记录
+message TransferRecord{
+    optional int32      userId         =1;  //用户Id
+    optional int32      curPage        =2;  //当前页
+    optional int32      pageCount      =3;  //每页多少条
+}
+
+//转账记录信息
+message TransferRecordInfo{
+    optional int32      sendId           =1;  //赠送者
+    optional string     sendNickname     =2;  //赠送者昵称
+    optional int32      recieveId        =3;  //被赠送者
+    optional string     recieveNickname  =4;  //被赠送者昵称
+    optional int64      num              =5;  //金额
+    optional string     time             =6;  //时间
+}
+
+//转账记录返回
+message TransferRecordRes{
+    repeated TransferRecordInfo recordList = 1; //赠送列表
+    optional int32 page 				   = 2;	//当前页
+    optional int32 count 				   = 3;	//总页数
+    optional StatusMsg  statusMsg          = 4;//回执状态
+}
+
+//请求user签到信息或者用户签到
+message GetUserSign{
+    required int32 userId=1;//玩家id，开房者id
+}
+
+//请求user签到信息返回与签到返回
+message GetUserSignRes{
+    optional StatusMsg statusMsg=1;//回执状态
+    optional int32 signCount=2 [default = 0];//累计签到天数
+    repeated int32 daySignHistory=3;//每天有那几天签到了的
+    optional int32 daySignState=4 [default = 0]; //0 不可以签  1 可以签  2 已经签到
+    optional int32 weekDay = 5;//当前星期几
+    optional int32 bindPhone = 6;// 0 = 没绑定 1 = 绑定
+}
+
+message FriendReq{
+    optional string key = 1; //添加或者搜索的其他玩家手机号或者玩家ID
+    optional int32  operType = 2; // 0=获取好友列表  1=搜索玩家 2=跟随  3=添加好友 4=获取申请添加好友列表  5 同意好友申请 6拒绝申请
+    optional int32 userId = 3; //玩家userId
+    optional int32 friendId = 4; // 被添加的玩家userId 或者被跟随的玩家id 或者同意的玩家 或者 拒绝的玩家id
+}
+message Friend{
+    optional int32 userId = 1; //玩家userId
+    optional int32 friendId = 2; //朋友id或者搜索玩家id 或者搜索返回的玩家id
+    optional string nickName = 3; //朋友或者搜索玩家昵称
+    optional int64 gold = 4; //朋友或者搜索玩家金币
+    optional  string remask = 5; //朋友描述 看玩家是否是在线还是离线还是游戏中
+    optional  string headImg = 6; //头像
+}
+message FriendResp{
+    optional StatusMsg statusMsg=1;//回执状态
+    repeated Friend friends = 2; //搜索或者拉取朋友列表返回
+    optional int32 reqType = 3;//0 获取好友列表  1 搜索玩家 2 跟随  3 添加好友
+}
+
+message SignReward{
+    optional int32 type = 1;// 1 每日签到金币 2 累计签到积分
+    optional int32 num = 2;// 1 数量
+    optional int32 need = 3;// 需要天数
+    optional string picType = 4;// 图片类型
+}
+
+message SignRewardResp{
+    optional StatusMsg statusMsg=1;//回执状态
+    repeated SignReward rewaard = 2; // 奖励列表
+}
+
+
+//user的银币、砖石、房卡
+message UserWealth{
+    optional int64 gold=1;//用户当前的金币数量
+    optional int32 diamonds=2;//用户当前的钻石数量
+    optional int32 points=3;//用户当前的房卡数量
+}
+
+message ReConnect{
+    optional int32 serviceType=1;//需要连接的服务类型
+    optional int32 toServerId=2;//需要连接的服务id
+    optional int32 deskId=3;//跟随的时候使用
+}
+
+message BeginTurn{
+    optional int32 userId = 1;
+    optional int32 type = 2; //转盘类型1=免费 2= 金币
+    optional int32 num = 3;// 请求转的次数
+}
+
+message BeginTurnRes{
+    optional StatusMsg statusMsg=1;//回执状态
+    repeated int32 tableId = 2;//奖励id
+    optional int32 selfGoldBallNum = 3;//我的金球个数
+}
+
+message PTurntable{
+    optional int32 tableId = 1;//奖品id
+    optional int32 num = 2; //奖品金币数量
+    optional int32 rewardType = 3;//奖品类型 1 = 金币
+    optional string pic = 4;//奖品图片类型
+}
+
+message PturntableRes{
+    repeated PTurntable turntable = 1;
+    optional int32 oneSpend = 2; //转一次消耗的金币
+    optional int32 tenSpend = 3; //转十次消耗的金币
+    optional int32 cunrrentCount = 4;//当前夺宝期数
+    optional int32 goldBallReward = 5;//夺宝大奖，奖励的金币数量
+    optional int32 goldBallTarget = 6;//夺宝需要的总次数
+    optional int32 goldBallSpeed = 7;//当前夺宝的进度
+    optional int32 goldBallPerson = 8;//当前夺宝参与的人数
+    optional int32 selfGoldBallNum = 9;//我的金球个数
+    optional int32 free = 10;//是否可以免费抽一次奖 0=可以 1=不能
+    optional StatusMsg statusMsg=11;//回执状态
+    optional int32 spendType = 12; //消耗货币类型 1 = 金币
+    optional int32 goldBallRewardType = 13;//金球开奖的奖励 1 = 金币
+}
+
+message InTurntable{
+    optional int32 userId = 1;//玩家id
+}
+
+message FlushGoldball{
+    optional int32 persons = 1;//参与的人数 多少个人
+    optional int32 speed = 2;//夺宝进度 多少个球
+    optional int32 term = 3;//当前期数
+
+}
+
+message SelfGoldball{
+    optional int32 userId = 1;//玩家id
+}
+
+message SelfGoldballRes{
+    optional StatusMsg statusMsg=1;//回执状态
+    repeated int32 goldball = 2;
+}
+
+message GoldballRecord{
+    optional int32 userId = 1;
+}
+
+message PGoldballTerm{
+    optional int32 term = 1;//期数
+    optional int32 rewardNum = 2;//奖励数量
+    optional int32 rewardType = 3;//奖励类型
+    optional int32 goldball = 4;//开奖号码
+    optional string openTime = 5;//开奖时间
+    optional string headImg = 6;//头像url
+    optional int32   joinState = 7;//参与状态 0=没参加 1=参加
+    optional string nickname = 8;//获奖玩家昵称
+}
+
+message GoldballRecordRes{
+    optional StatusMsg statusMsg=1;//回执状态
+    repeated PGoldballTerm goldballTerm = 2;// 历史期数
+}
+
+message SendPhoneCode{
+    optional string phone=1;//玩家电话号码
+}
+
+message SendPhoneCodeRes{
+    optional StatusMsg statusMsg=1;//回执状态
+}
+
+//走马灯通知
+message HorseLantern{
+    optional string content=1;//走马灯内容
+    optional  int32  type = 2;//1=系统公告  2=俱乐部公告
+}
+//被顶号了
+message OtherLogin{
+    optional string msg=1;//提示内容
+}
+
+message ClubManageReq{
+    optional int32 userId = 1; //俱乐部管理员游戏id
+}
+
+message ClubManageResp{
+    optional StatusMsg statusMsg=1;//回执状态
+    optional int32 userId = 2;//userId
+    optional string nickName = 3;//昵称
+    optional int32 clubUserCount = 4;//人数
+    optional string remasks = 5;//公告
+    optional string headImg = 6;//头像
+    optional int32 sex = 7;//玩家的性别，值为1时是男性，值为2时是女性，值为0时是未知
+}
+
+message UpdateRemasksReq{
+    optional int32 userId = 1; //俱乐部管理员游戏id
+    optional string remasks = 2;//公告
+}
+
+message UpdateRemasksResp{
+    optional StatusMsg statusMsg=1;//回执状态
+}
+
+message ClubUsersReq{
+    optional int32 userId = 1; //俱乐部管理员游戏id
+    optional int32 searchUserId = 2;//搜索的玩家id
+    optional int32 pageSize = 3;//每页条数
+    optional int32 currentPage = 4;//当前页
+}
+
+message PclubUser{
+    optional int32 userId = 1;//userId
+    optional string nickName = 2;//昵称
+    optional int64 gold = 3;//金币
+    optional int32 role = 4;//职位 0 = 普通 1= 代理
+    optional string onlineState = 5;//状态
+}
+
+message ClubUsersResp{
+    optional StatusMsg statusMsg=1;//回执状态
+    repeated PclubUser pclubUser = 2;//俱乐部成员
+    optional int32 pageCount = 3;//总页数
+    optional int32 currentPage = 4;//当前页
+}
+
+message ContributeDetailReq{
+    optional int32 userId = 1; //俱乐部管理员游戏id
+}
+
+//每日贡献
+message Pcontribute{
+     optional int64 directCtrb = 1;//直属成员共享
+     optional int64 teamCtrb = 2;//团队成员贡献
+     optional int64 totalRecCtrb = 3;//总领取贡献
+     optional int64 smallGameCtrb = 4;//小游戏贡献
+     optional string  date = 5;//日期
+
+}
+
+message ContributeDetailResp{
+    optional StatusMsg statusMsg=1;//回执状态
+    repeated Pcontribute pcontribute = 2;//贡献详情
+    optional int32 showSmallGameCtrb = 3;//小游戏贡献显示 0= 显示 1 = 隐藏
+}
+
+message ClubUserCtrbReq{
+    optional int32 userId = 1; //俱乐部管理员游戏id
+    optional int32 role = 2;// 0 = 获取直属成员 1 = 获取代理
+    optional int32 pageSize = 3;//每页条数
+    optional int32 currentPage = 4;//当前页
+    optional int32 dateType = 5;//0 = 当前 1 = 昨天 2=本周 3 = 上周
+}
+
+message ClubUserCtrb{
+    optional int32 userId = 1;//userId
+    optional string nickName = 2;//昵称
+    optional int32 developCount = 3;//发展人数
+    optional int64 totalCtrb = 4;//总贡献
+    optional int32 rebatePercent = 5;//返奖比
+    optional int64 expectRebate = 6;//预计返奖
+}
+
+message ClubUserCtrbResp{
+    optional StatusMsg statusMsg=1;//回执状态
+    repeated ClubUserCtrb clubUserCtrb = 2;//贡献详情
+    optional int32 totalDirectCount = 3;//总的直属成员
+    optional int32 totalAgentCount = 4;//总的代理人数
+    optional int32 pageCount = 5;//总页数
+    optional int32 currentPage = 6;//当前页
+    optional int64 dateType = 7;//0 = 当前 1 = 昨天 2=本周 3 = 上周
+}
+
+message MySpreadReq{
+    optional int32 userId = 1;//userId
+}
+
+message MySpreadResp{
+    optional StatusMsg statusMsg=1;//回执状态
+    optional string qrCodeUrl = 2; //二维码地址
+    optional string shareUrl = 3;//链接地址
+    optional string shareImgUrl = 4;//分享推广请求图片地址
+}
+
+
+message TCMD_REQ_BENEFIT{
+    optional int32 userId = 1;//userId
+}
+
+message TCMD_RES_BENEFIT{
+    optional StatusMsg statusMsg=1;//回执状态
+    optional int32 userId = 2;
+    optional int64 money = 3;
+}
+
+//活动公告
+message ActiveNotice{
+    required int32 textImg = 1;//0为文本,1为图片
+    required string title = 2;//文本标题
+    optional string topTitle = 3; //头部标题图片
+    required string content = 4;//显示内容,为图片时是图片路径，为文本时是内容
+    optional int32 jumpType = 5;//跳转类型
+    optional string jumpContent = 6;//跳转内容
+}
+
+//活动公告列表
+message ActiveNticeListReq{
+    optional int32 userId=1;//玩家游戏当中的唯一id
+}
+
+//活动公告列表
+message ActiveNticeList{
+    repeated ActiveNotice acticeNotiveList = 1;
+    optional StatusMsg statusMsg=2;//回执状态
+}
+
+message FetchClubHorseLantern{
+    optional int32 userId = 2;//玩家游戏id
+}
+message Gift{
+    optional int32 id = 1;// 唯一标识（背包里面中用，一个物品可以拥有多个，分开显示。 使用道具的时候传这个值）
+    optional int32 giftId = 2;// 物品id (购买道具的时候传这个值)
+    optional int32 itemId = 3;// 礼物类型 1为头像 2金币包
+    optional string itemName = 4;// 礼物名称
+    optional int32 goldCost = 5;// 礼物花费
+    optional string picType = 6;// 礼物图标
+    optional int32 timeLimit = 7;// 礼物时间限制
+    optional int32 using = 8;// 是否使用中 0未使用 1使用中 2已使用
+    optional int32 num = 9;// 数量
+}
+message GiftsRes{
+    repeated Gift gift = 1;//礼物集合
+    optional StatusMsg  statusMsg = 2;//回执状态
+    optional int32  type = 3[default = 0];//类型 0商城 1背包 2门票
+}
+message BuyGift{
+    optional int32 userId = 1;//玩家id 送自己就填自己的游戏id  送别人就填别人的游戏id
+    optional int32 giftId = 2;// 礼物id 唯一标识
+    optional StatusMsg  statusMsg = 3;//回执状态
+}
+message GiveAwayTicket{
+    optional int32 userId = 1;//玩家id 送自己就填自己的游戏id  送别人就填别人的游戏id
+    optional int32 giftId = 2;// 礼物id 唯一标识
+    optional int32 num = 3;// 数量
+    optional StatusMsg  statusMsg = 4;//回执状态
+}
+message UseProp{
+    optional int32 id = 1;// 唯一标识（背包中用 一个物品可以拥有多个 分开显示）
+    optional StatusMsg  statusMsg = 2;//回执状态
+}
+message UseTicket{
+    optional int32 id = 1;// 门票id
+    optional int32 type = 2;// 跳转type 1sng 2mtt新秀 3mtt新秀赛 4大师赛
+    optional StatusMsg  statusMsg = 3;//回执状态
+}
+
+message HeadImg {
+    optional string picType = 1; // 礼物图标
+    optional int32 headImgType = 2; // 类型 0原始头像 1道具头像
+}
+//集五福相关
+//各等级中奖信息
+message LuckCardAwardInfo{
+    optional int32 level=1;// 中奖等级 1=1等奖，2=2等奖，3=3等奖
+    optional int32 awardCount=2;//中奖人数
+    optional int64 totalGold=3;//总中奖额
+    optional int64 sigleGold=4;//单注金额
+}
+//查询五福主界面
+message LuckCardReq{
+    optional int32 userId = 1;//玩家游戏id
+}
+//查询主界面返回
+message LuckCardRes{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    optional int32 limitTimes=2;//剩余翻牌次数
+    repeated int32 playerCards=3;//玩家已翻到的牌，为空者一张都没翻
+    repeated int32 awardCards=4;//本期开出的五张中奖牌
+    optional int32 nextAwardTime=5;//下次开奖到计时的剩余时间(单位秒)
+    repeated LuckCardAwardInfo awardInfos=6;//各等级中奖信息，服务端已排好序
+    optional int32 texasMiddlePlays=7;//中产对局数
+    optional int32 texasHighPlays=8;//大亨对局数
+    optional int32 cowboyPlays=9;//牛仔对局数
+    optional int32 pushDotPlays=10;//推筒子对局数
+}
+//请求翻牌
+message TurnLuckCardReq{
+    optional int32 userId = 1;//玩家游戏id
+}
+//翻牌返回
+message TurnLuckCardRes{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    optional int32  card=2;//翻中的牌
+    optional int32 awardLevel=3;//中奖等级 0=未中奖 1=1等奖 2=2等奖 3=3等奖
+    optional int32 limitTimes=4;//剩余翻牌次数
+}
+//请求获取中奖名单
+message SearchNameListReq{
+    optional int32 userId = 1;//玩家游戏id
+}
+//返回中奖名单
+message SearchNameListRes{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    repeated string nickName=2;//最新的10个中奖玩家名单
+}
+
+
+message SngRacingRoomReq{
+    optional int32 num = 1;// 人数
+}
+
+//比赛服
+message SngRacingRoom{
+    optional string name = 1;// 名字
+    optional string reward = 2;// 名字
+    optional int32 beginNum = 3;// 开局人数
+    optional int32 joinFee = 4;//报名费
+    optional int32 serviceFee = 5;// 服务费
+    optional int32 roomId = 6;// 房间服id
+    optional int32 sitNum = 7;//已经桌下的人数
+    optional int32 toServerId = 8;//游戏服的toServerId
+    optional int32 ticketNum = 9;// 可用门票数量
+}
+
+message SngRacingRoomResp{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    repeated  SngRacingRoom sngRacingRoom = 2;//比赛服
+}
+
+// 收礼记录
+message GiftRecord{
+    optional int32 buyUserId = 1;// 赠送人
+    optional string nickName = 2;// 赠送人名字
+    optional int32 giftId = 3;// 礼物id
+    optional string itemName = 4;// 礼物名称
+    optional string time = 5;// 时间
+}
+message GiftRecordRes{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    repeated  GiftRecord GiftRecord = 2;//记录列表
+}
+
+// 门票记录
+message TicketRecord{
+    optional int32 otherId = 1;// 玩家id
+    optional string otherName = 2;// 玩家昵称
+    optional int32 giftId = 3;// 礼物id
+    optional string itemName = 4;// 礼物名称
+    optional int32 type = 5;// 类型 0赠送 1收礼
+    optional string time = 6;// 时间
+    optional int32 num = 7;// 数量
+}
+message TicketRecordRes{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    repeated  TicketRecord ticketRecord = 2;//记录列表
+}
+
+// 活动转盘
+message ActiveTurntable{
+    optional int32 tableId = 1;// 唯一id
+    optional int32 rewardNum = 2;// 奖励数值
+    optional string picType = 3;// 图片
+    optional int32 rewardType = 4[default = 1];// 奖励类型 1=金币
+}
+// 活动转盘累计天数加成
+message ActiveAddition{
+    optional int32 consecutiveDays = 1;// 天数
+    optional int32 goldPlus = 2;//累计加成（千分比）
+}
+// 活动转盘返回
+message ActiveTurntableRes{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    repeated ActiveTurntable activeTurntable = 2;// 活动转盘
+    repeated ActiveAddition activeAddition = 3;// 累计天数加成
+    optional int32 type = 4;// 转盘类型 0新手 1中产 2大亨
+    optional int32 currentDay = 5;// 当前天数
+    optional int32 count = 6;//剩余次数
+    optional int32 middleCount = 7;//中级场已对局局数
+    optional int32 tycoonCount = 8;//大亨场已对局局数
+}
+
+// 转转盘
+message PlayTurntable{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    optional int32 type = 2;// 转盘类型 0新手 1中产 2大亨(客户端传)
+    optional int32 rewardNum = 3;// 奖励数值
+    optional int32 rewardType = 4[default = 1];// 奖励类型 1=金币
+    optional int32 tableId = 5;// 奖励唯一id
+    optional int32 goldPlus = 6;//累计加成（千分比）
+    optional int32 count = 7;//剩余转盘次数
+}
+
+message BindClubIdReq{
+    optional int32 userId = 1;//需要绑定的俱乐部管理员的id
+}
+
+message BindClubIdResp{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    optional int64 money = 2;//奖励金钱
+}
+
+enum MttStatus {
+    MttStatusNo = 0;// 默认 未开放
+    MttStatusCanSignUp = 1;// 可报名
+    MttStatusSignedUp = 2;// 已报名
+    MttStatusSitDown = 3;// 可坐下
+    MttStatusMax = 4;// 报名人数已达上限
+    MttStatusPlaying = 5;// 进行中
+}
+//mtt
+message MttRoom{
+    optional int32 roomId = 1;// 房间id
+    optional int32 gameId = 2;// 游戏id
+    optional string name = 3;// 名字
+    optional string openTime = 4;// 开放时间
+    optional int32 openCountDown = 5;// 开放倒计时
+    optional int32 startCountDown = 7;// 开赛倒计时
+    optional int32 delayCountDown = 8;// 延迟进入倒计时
+    optional int32 advanceCountDown = 9;// 提前进入倒计时
+    optional int32 signUpStatus= 10;// 报名状态
+    optional string reward = 11;// 奖励
+    optional int64 joinFee = 12;//报名费
+    optional int64 serviceFee = 13;// 服务费
+    optional int32 signedUpCount = 14;//已报名人数
+    optional int32 reBuy = 15;// 重购
+    optional int32 addOn= 16;// 曾购
+    optional int32 toServerId = 17;//游戏服的toServerId
+    optional string picType = 18;//标题图标美术名称
+    optional int32 picNumber = 19;//标题显示数值
+    optional int32 startMinute = 20;// 如果未开放，显示：未开放 赛前X小时开放
+    optional int32 ticketNum = 21;// 可用门票数量
+}
+message MttRoomList{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    optional int32 type = 2[default = 2];// 类型 2=MTT新秀赛 3=MTT精英赛 4=MTT大师赛 5=节日赛
+    repeated MttRoom mttRoom = 3;// 房间列表
+}
+message MttSignUp{
+    optional StatusMsg  statusMsg = 1;//回执状态
+    optional int32 roomId = 2;// 房间id
+    optional int32 gameId = 3;// 游戏id
+}
+//进入mtt房间
+message IntoMttRoom{
+    optional StatusMsg statusMsg       =1;//回执状态
+    optional int32 gameId              =2;//游戏Id
+    optional int32 roomId              =3;//赛事id
+    optional int32 deskId              =4;//桌子id
+    optional int32 toServerId          =5;//游戏服序号
+    optional int32 serviceType         =6;//游戏类型
+}
+//取消mtt报名
+message MttCancelSignUp{
+    optional StatusMsg statusMsg       =1;//回执状态
+    optional int32 gameId              =2;//游戏id
+    optional int32 roomId              =3;//比赛房间id
+}
+message Blind{
+	optional int32 level = 1;//级别
+	optional string blind = 2;//盲注
+	optional int32 ante = 3;//前注
+	optional int32 raiseBlindTime = 4;//升盲时间(秒)
+}
+message OutsReq{
+	optional int32 roomId = 1;//赛事id
+}
+message Outs{
+	optional int64 initChip = 1;//初始筹码
+	optional int32 reBuyNum = 2;//重购买入次数限制（0.禁止买入，-1无限制）
+	optional int64 reBuyChip = 3;//重购买入一次获得筹码数量
+	optional int64 reBuyConsume = 4;//重购买入一次消耗金币
+	optional int32  addBuyNum = 5;//增购买入次数限制（0.禁止买入，-1无限制）
+	optional int64 addBuyChip = 6;// 增购买入一次获得筹码数量
+	optional int64 addBuyConsume = 7;// 增购买入一次消耗金币
+	optional int32 delay = 8;// 延迟登记时间（分钟）
+	optional int32 openCountDown = 9;// 开放倒计时
+    optional int32 startCountDown = 10;// 开赛倒计时
+    optional int32 delayCountDown = 11;// 延迟进入倒计时
+    optional int32 advanceCountDown = 12;// 提前进入倒计时
+    optional int32 signUpStatus= 13;// 报名状态
+    optional int32 minJoin= 14;// 最低参赛人数
+    optional int32 maxJoin= 15;// 最高参赛人数
+}
+message OutsResp{
+	optional StatusMsg  statusMsg  = 1;//回执状态
+	repeated Blind blind = 2;//盲注
+	repeated int64 reward = 3;//奖励
+    optional Outs outs = 4;//概述
+}
+message CheckUser{
+    optional int32 userId = 1;// 玩家id
+    optional string nickName = 2;// 玩家昵称
+	optional StatusMsg  statusMsg  = 3;//回执状态
+}
+
